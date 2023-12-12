@@ -1,0 +1,9 @@
+export const CURRENCIES_QUERY_KEY = "currencies";
+export const CATEGORIES_QUERY_KEY = "categories";
+export const INCOMES_QUERY_KEY = "incomes";
+export const EXPENSES_QUERY_KEY = "expenses";
+export const DASHBOARD_EXPENSES_QUERY_KEY = "dashboardExpenses";
+export const DASHBOARD_INCOMES_QUERY_KEY = "dashboardIncomes";
+export const TOTAL_INCOMES_QUERY_KEY = "totalIncomes";
+export const TOTAL_EXPENSES_QUERY_KEY = "totalExpenses";
+export const USER_CURRENCIES_QUERY_KEY = "userCurrencies";
