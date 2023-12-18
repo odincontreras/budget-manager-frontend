@@ -31,6 +31,11 @@ export interface TotalMovements {
   amount: number;
 }
 
+export interface MutationCustomHookProps {
+  action?: "create" | "update" | "delete";
+  extraOnSuccess?: () => void;
+}
+
 export type NewIcome = Omit<Income, "id" | "createdAt" | "updatedAt">;
 
 export interface Expense {
@@ -68,3 +73,26 @@ export interface ApiErrorResponse {
   error: string;
   message: string;
 }
+
+export type ChartConfig = {
+  series: ApexAxisChartSeries | ApexNonAxisChartSeries | undefined;
+  type?:
+    | "area"
+    | "line"
+    | "bar"
+    | "pie"
+    | "donut"
+    | "radialBar"
+    | "scatter"
+    | "bubble"
+    | "heatmap"
+    | "candlestick"
+    | "boxPlot"
+    | "radar"
+    | "polarArea"
+    | "rangeBar"
+    | "rangeArea"
+    | "treemap"
+    | undefined;
+  options: ApexCharts.ApexOptions;
+};

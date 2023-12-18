@@ -1,0 +1,99 @@
+import React from "react";
+import ReactApexChart from "react-apexcharts";
+import useDashboardExpensesQuery from "@/hooks/queries/useDashboardExpensesQuery";
+import useDashboardIncomesQuery from "@/hooks/queries/useDashboardIncomesQuery";
+import formatDate from "@/libs/dayjs";
+import { ChartConfig } from "@/types";
+
+const MovementsGraph = () => {
+  const dashboardExpensesQuery = useDashboardExpensesQuery();
+  const dashboardIncomesQuery = useDashboardIncomesQuery();
+
+  const chartData = React.useMemo(() => {
+    const dates: string[] = [];
+
+    const expensesByDate: { [key: string]: number } = {};
+
+    dashboardExpensesQuery.data?.forEach((expense) => {
+      const formatedDate = formatDate(expense.date);
+
+      dates.push(formatedDate);
+      expensesByDate[formatedDate] = expense.amount;
+    });
+
+    const incomesByDate: { [key: string]: number } = {};
+
+    dashboardIncomesQuery.data?.forEach((income) => {
+      const formatedDate = formatDate(income.date);
+
+      dates.push(formatedDate);
+      incomesByDate[formatedDate] = income.amount;
+    });
+
+    // YYYY-MM-DD
+
+    // Remove duplicates dates and sort
+    const formatedDates = [...new Set(dates)].sort((a, b) => {
+      const splitA = a.split("/");
+      const splitB = b.split("/");
+
+      const aDate = new Date(+splitA[2], +splitA[1] - 1, +splitA[0]);
+      const bDate = new Date(+splitB[2], +splitB[1] - 1, +splitB[0]);
+
+      return aDate.getTime() - bDate.getTime();
+    });
+
+    return {
+      labels: formatedDates,
+      expensesByDate,
+      incomesByDate,
+    };
+  }, [dashboardExpensesQuery.data, dashboardIncomesQuery.data]);
+
+  const lineChartConfig: ChartConfig = {
+    series: [
+      {
+        name: "Gastos",
+        data: chartData.labels.map(
+          (label) => chartData.expensesByDate[label] || 0
+        ),
+        color: "#f44336",
+      },
+      {
+        name: "Ingresos",
+        data: chartData.labels.map(
+          (label) => chartData.incomesByDate[label] || 0
+        ),
+      },
+    ],
+    options: {
+      title: {
+        text: "Missing data (null values)",
+      },
+
+      chart: {
+        height: 100,
+        type: "area",
+        zoom: {
+          enabled: false,
+        },
+      },
+      // labels: dateLabels,
+      labels: chartData.labels,
+      dataLabels: {
+        enabled: true,
+      },
+      grid: {
+        row: {
+          colors: ["#f3f3f3", "transparent"], // takes an array which will be repeated on columns
+          opacity: 0.5,
+        },
+      },
+    },
+    type: "line",
+  };
+  
+  return <ReactApexChart {...lineChartConfig} />;
+};
+
+export default MovementsGraph;
