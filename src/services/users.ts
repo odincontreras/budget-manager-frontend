@@ -31,6 +31,24 @@ export async function createUserIncome(data: NewIcome) {
   return Axios.post(`/users/${user?.id}/incomes`, data);
 }
 
+export async function deleteUserIncome(incomeId: number) {
+  const user = useAuthStore.getState().data?.user;
+
+  return Axios.delete(`/users/${user?.id}/incomes/${incomeId}`);
+}
+
+export async function updateUserIncome({
+  incomeId,
+  update,
+}: {
+  incomeId: number;
+  update: NewIcome;
+}) {
+  const user = useAuthStore.getState().data?.user;
+
+  return Axios.patch(`/users/${user?.id}/incomes/${incomeId}`, update);
+}
+
 export async function getUserExpenses(): Promise<Expense[]> {
   const user = useAuthStore.getState().data?.user;
 
@@ -61,8 +79,11 @@ export async function deleteUserExpense(expenseId: number) {
 
 export async function updateUserExpense({
   expenseId,
-  update
-}: { expenseId: number; update: NewExpense } ) {
+  update,
+}: {
+  expenseId: number;
+  update: NewExpense;
+}) {
   const user = useAuthStore.getState().data?.user;
 
   return Axios.patch(`/users/${user?.id}/expenses/${expenseId}`, update);

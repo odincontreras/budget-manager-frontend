@@ -20,7 +20,7 @@ export interface UserCurrency {
 export interface Income {
   id: string;
   amount: number;
-  currency: string;
+  currencyId: number;
   description?: string;
   date: Date;
   createdAt: string;

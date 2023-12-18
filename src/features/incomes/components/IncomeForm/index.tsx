@@ -1,18 +1,25 @@
 import { DatePicker, Form, Input, InputNumber, Select } from "antd";
 import useCurrenciesQuery from "@/hooks/queries/useCurrenciesQuery";
 import useAuthStore from "@/store";
-import { NewIcome } from "@/types";
+import { Income, NewIcome } from "@/types";
 import getUserCurrencies from "@/utils/getUserCurrencies";
+import dayjs from "dayjs";
 
-type AddIncomeFormProps = {
+type IncomeFormProps = {
   onFinish?: (values: NewIcome) => void;
+  action?: "create" | "update";
+  income?: Income;
 };
 
 const logValues = (values: NewIcome) => {
   console.log(values);
 };
 
-const AddIncomeForm = ({ onFinish = logValues }: AddIncomeFormProps) => {
+const IncomeForm = ({
+  onFinish = logValues,
+  action = "create",
+  income,
+}: IncomeFormProps) => {
   const user = useAuthStore((state) => state.data?.user);
   const { data } = useCurrenciesQuery();
 
@@ -29,6 +36,7 @@ const AddIncomeForm = ({ onFinish = logValues }: AddIncomeFormProps) => {
         label="Moneda"
         name="currencyId"
         rules={[{ required: true, message: "Este campo es requerido" }]}
+        initialValue={action === "update" && income?.currencyId}
       >
         <Select
           style={{ width: "100%" }}
@@ -43,6 +51,7 @@ const AddIncomeForm = ({ onFinish = logValues }: AddIncomeFormProps) => {
         label="Cantidad"
         name="amount"
         rules={[{ required: true, message: "Este campo es requerido" }]}
+        initialValue={action === "update" && income?.amount}
       >
         <InputNumber style={{ width: "100%" }} />
       </Form.Item>
@@ -51,15 +60,22 @@ const AddIncomeForm = ({ onFinish = logValues }: AddIncomeFormProps) => {
         label="Fecha"
         name="date"
         rules={[{ required: true, message: "Este campo es requerido" }]}
+        initialValue={
+          action === "update" && income?.date && dayjs(income?.date)
+        }
       >
         <DatePicker format={"DD/MM/YYYY"} style={{ width: "100%" }} />
       </Form.Item>
 
-      <Form.Item label="Descripción" name="description">
+      <Form.Item
+        label="Descripción"
+        name="description"
+        initialValue={action === "update" && income?.description}
+      >
         <Input.TextArea rows={4} />
       </Form.Item>
     </Form>
   );
 };
 
-export default AddIncomeForm;
+export default IncomeForm;
