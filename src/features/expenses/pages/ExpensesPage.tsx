@@ -1,15 +1,15 @@
 import ExpensesTable from "../components/ExpensesTable";
-import AddExpensesForm from "../components/AddExpenseForm";
+import ExpenseForm from "../components/ExpenseForm";
 import DashboardPageShell from "../../../components/DashboardPageShell";
 import useExpensesMutation from "@/hooks/mutations/useExpensesMutation";
 
 const ExpensesPage = () => {
-  const mutation = useExpensesMutation();
+  const mutation = useExpensesMutation({});
 
   return (
     <DashboardPageShell
       buttonText="Agregar Gasto"
-      addItemForm={<AddExpensesForm onFinish={mutation.mutate} />}
+      addItemForm={<ExpenseForm onFinish={mutation.mutate} />}
       title="Gastos"
       loading={mutation.isPending}
     >

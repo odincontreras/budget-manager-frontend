@@ -35,7 +35,7 @@ const DashboardPageShell = ({
 
       {addItemForm && (
         <Modal
-          open={open}
+          open={Boolean(open)}
           onCancel={onToggleOpen}
           okButtonProps={{
             htmlType: "submit",

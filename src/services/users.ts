@@ -1,4 +1,11 @@
-import { Expense, Income, NewExpense, NewIcome, TotalMovements, UserCurrency } from "../types";
+import {
+  Expense,
+  Income,
+  NewExpense,
+  NewIcome,
+  TotalMovements,
+  UserCurrency,
+} from "../types";
 import Axios from "../libs/axios";
 import useAuthStore from "@/store";
 
@@ -44,6 +51,21 @@ export async function createUserExpense(data: NewExpense) {
   const user = useAuthStore.getState().data?.user;
 
   return Axios.post(`/users/${user?.id}/expenses`, data);
+}
+
+export async function deleteUserExpense(expenseId: number) {
+  const user = useAuthStore.getState().data?.user;
+
+  return Axios.delete(`/users/${user?.id}/expenses/${expenseId}`);
+}
+
+export async function updateUserExpense({
+  expenseId,
+  update
+}: { expenseId: number; update: NewExpense } ) {
+  const user = useAuthStore.getState().data?.user;
+
+  return Axios.patch(`/users/${user?.id}/expenses/${expenseId}`, update);
 }
 
 export async function getUserCurrencies() {

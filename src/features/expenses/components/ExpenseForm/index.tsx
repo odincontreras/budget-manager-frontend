@@ -1,19 +1,26 @@
 import { DatePicker, Form, Input, InputNumber, Select } from "antd";
+import dayjs from "dayjs";
 import useCategoriesQuery from "@/hooks/queries/useCategoriesQuery";
 import useCurrenciesQuery from "@/hooks/queries/useCurrenciesQuery";
 import useAuthStore from "@/store";
 import getUserCurrencies from "@/utils/getUserCurrencies";
-import { NewExpense } from "@/types";
+import { Expense, NewExpense } from "@/types";
 
-type AddExpenseFormProps = {
+type ExpenseFormProps = {
   onFinish?: (values: NewExpense) => void;
+  action?: "create" | "update";
+  expense?: Expense;
 };
 
 const logValues = (values: NewExpense) => {
   console.log(values);
 };
 
-const AddExpenseForm = ({ onFinish = logValues }: AddExpenseFormProps) => {
+const ExpenseForm = ({
+  onFinish = logValues,
+  action = "create",
+  expense,
+}: ExpenseFormProps) => {
   const categoriesQuery = useCategoriesQuery();
   const currenciesQuery = useCurrenciesQuery();
 
@@ -35,6 +42,7 @@ const AddExpenseForm = ({ onFinish = logValues }: AddExpenseFormProps) => {
         label="Moneda"
         name="currencyId"
         rules={[{ required: true, message: "Este campo es requerido" }]}
+        initialValue={action === "update" && expense?.currencyId}
       >
         <Select
           style={{ width: "100%" }}
@@ -49,6 +57,7 @@ const AddExpenseForm = ({ onFinish = logValues }: AddExpenseFormProps) => {
         label="Categoria"
         name="categoryId"
         rules={[{ required: true, message: "Este campo es requerido" }]}
+        initialValue={action === "update" && expense?.categoryId}
       >
         <Select
           style={{ width: "100%" }}
@@ -63,6 +72,7 @@ const AddExpenseForm = ({ onFinish = logValues }: AddExpenseFormProps) => {
         label="Cantidad"
         name="amount"
         rules={[{ required: true, message: "Este campo es requerido" }]}
+        initialValue={action === "update" && expense?.amount}
       >
         <InputNumber style={{ width: "100%" }} />
       </Form.Item>
@@ -71,15 +81,22 @@ const AddExpenseForm = ({ onFinish = logValues }: AddExpenseFormProps) => {
         label="Fecha"
         name="date"
         rules={[{ required: true, message: "Este campo es requerido" }]}
+        initialValue={
+          action === "update" && expense?.date && dayjs(expense?.date)
+        }
       >
         <DatePicker format={"DD/MM/YYYY"} style={{ width: "100%" }} />
       </Form.Item>
 
-      <Form.Item label="Descripción" name="description">
+      <Form.Item
+        label="Descripción"
+        name="description"
+        initialValue={action === "update" && expense?.description}
+      >
         <Input.TextArea rows={4} />
       </Form.Item>
     </Form>
   );
 };
 
-export default AddExpenseForm;
+export default ExpenseForm;
