@@ -1,6 +1,5 @@
 import { Button, Flex, Modal, Typography } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
-import useModal from "@/hooks/useModal";
 
 type DashboardPageShellType = {
   children: React.ReactNode;
@@ -8,6 +7,8 @@ type DashboardPageShellType = {
   buttonText?: string;
   title?: string;
   loading?: boolean;
+  openAddItemForm?: boolean;
+  onToggleOpenItemForm?: () => void;
 };
 
 const DashboardPageShell = ({
@@ -16,16 +17,16 @@ const DashboardPageShell = ({
   buttonText = "Agregar Item",
   title = "Dashboard",
   loading = false,
+  openAddItemForm = false,
+  onToggleOpenItemForm = () => {},
 }: DashboardPageShellType) => {
-  const { onToggleOpen, open } = useModal();
-
   return (
     <>
       <Typography.Title level={3}>{title}</Typography.Title>
 
       {addItemForm && (
         <Flex justify="end" style={{ marginBottom: 16 }}>
-          <Button icon={<PlusOutlined />} onClick={onToggleOpen}>
+          <Button icon={<PlusOutlined />} onClick={onToggleOpenItemForm}>
             {buttonText}
           </Button>
         </Flex>
@@ -35,8 +36,8 @@ const DashboardPageShell = ({
 
       {addItemForm && (
         <Modal
-          open={Boolean(open)}
-          onCancel={onToggleOpen}
+          open={openAddItemForm}
+          onCancel={onToggleOpenItemForm}
           okButtonProps={{
             htmlType: "submit",
             form: "modal-form",

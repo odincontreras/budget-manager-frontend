@@ -1,10 +1,19 @@
-import useIncomesMutation from "@/hooks/mutations/useIncomesMutation";
+import { message } from "antd";
 import DashboardPageShell from "../../../components/DashboardPageShell";
 import IncomeForm from "../components/IncomeForm";
 import IncomesTable from "../components/IncomesTable";
+import useIncomesMutation from "@/hooks/mutations/useIncomesMutation";
+import useModal from "@/hooks/useModal";
 
 const IncomesPage = () => {
-  const mutation = useIncomesMutation({});
+  const { open, onToggleOpen } = useModal();
+
+  const mutation = useIncomesMutation({
+    extraOnSuccess: () => {
+      onToggleOpen();
+      message.success("Ingreso agregado exitosamente");
+    },
+  });
 
   return (
     <DashboardPageShell
@@ -12,6 +21,8 @@ const IncomesPage = () => {
       buttonText="Agregar Ingreso"
       title="Ingresos"
       loading={mutation.isPending}
+      onToggleOpenItemForm={onToggleOpen}
+      openAddItemForm={Boolean(open)}
     >
       <IncomesTable />
     </DashboardPageShell>
