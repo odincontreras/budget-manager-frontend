@@ -91,7 +91,7 @@ const ExpenseForm = ({
       <Form.Item
         label="Descripción"
         name="description"
-        initialValue={action === "update" && expense?.description}
+        initialValue={action === "update" ? expense?.description : undefined}
       >
         <Input.TextArea rows={4} />
       </Form.Item>
