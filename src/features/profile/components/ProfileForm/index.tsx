@@ -1,11 +1,12 @@
 import { Form, Input, Select, Button, Modal } from "antd";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo } from "react";
 import useAuthStore from "@/store";
 import useCurrenciesQuery from "@/hooks/queries/useCurrenciesQuery";
 import getUserCurrencies from "@/utils/getUserCurrencies";
 import SelectedCurrenciesList from "../SelectedCurrenciesList";
 import { UserCurrency } from "@/types";
 import CurrencyConfigForm from "../CurrencyConfigForm";
+import useModal from "@/hooks/useModal";
 
 const ProfileForm = () => {
   const user = useAuthStore((state) => state.data?.user);
@@ -15,12 +16,10 @@ const ProfileForm = () => {
 
   const [form] = Form.useForm();
 
-  const [activeCurrencyConfidId, setActiveCurrencyConfidId] = useState<
-    number | null
-  >(null);
+  const { onSetOpen, onToggleOpen, open } = useModal();
 
   const onOpenCurrencyConfigModal = (currencyId: number) => {
-    setActiveCurrencyConfidId(currencyId);
+    onSetOpen(currencyId);
   };
 
   const userCurrencies = useMemo(
@@ -73,6 +72,10 @@ const ProfileForm = () => {
 
     const selectedCurrenciesConfig = currenciesConfig?.filter((currency) =>
       values.currencies.includes(currency.currencyId)
+    );
+    console.log(
+      "🚀 ~ file: index.tsx:78 ~ ProfileForm ~ selectedCurrenciesConfig:",
+      selectedCurrenciesConfig
     );
 
     if (values.name !== user?.name) update["name"] = values.name;
@@ -146,8 +149,8 @@ const ProfileForm = () => {
       </Form>
 
       <Modal
-        open={Boolean(activeCurrencyConfidId)}
-        onCancel={() => setActiveCurrencyConfidId(null)}
+        open={Boolean(open)}
+        onCancel={onToggleOpen}
         title="Configuración de moneda"
         destroyOnClose
         okButtonProps={{
@@ -157,9 +160,11 @@ const ProfileForm = () => {
       >
         <CurrencyConfigForm
           currentConfig={currenciesConfig?.find(
-            (config) => config.currencyId === activeCurrencyConfidId
+            (config) => config.currencyId === Number(open)
           )}
+          currencyId={Number(open)}
           profileForm={form}
+          onToggleOpen={onToggleOpen}
         />
       </Modal>
     </>

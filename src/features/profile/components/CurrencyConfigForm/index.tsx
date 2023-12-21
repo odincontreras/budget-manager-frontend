@@ -4,11 +4,15 @@ import { UserCurrency } from "@/types";
 type CurrencyConfigFormProps = {
   currentConfig?: UserCurrency;
   profileForm: FormInstance;
+  currencyId?: number;
+  onToggleOpen: () => void;
 };
 
 const CurrencyConfigForm = ({
   currentConfig,
   profileForm,
+  currencyId,
+  onToggleOpen,
 }: CurrencyConfigFormProps) => {
   const onFinish = (values: {
     weeklySpendingGoal: number;
@@ -16,13 +20,8 @@ const CurrencyConfigForm = ({
   }) => {
     const currenciesConfig = [...profileForm.getFieldValue("currenciesConfig")];
 
-    const existsCurrencyConfig = currenciesConfig.find(
-      (currencyConfig) =>
-        currencyConfig.currencyId === currentConfig?.currencyId
-    );
-
-    if (!existsCurrencyConfig) {
-      currenciesConfig.push({ currencyId: currentConfig?.currencyId });
+    if (!currentConfig) {
+      currenciesConfig.push({ currencyId });
     }
 
     profileForm.setFieldsValue({
@@ -32,6 +31,8 @@ const CurrencyConfigForm = ({
           : { ...currencyConfig, ...values }
       ),
     });
+
+    onToggleOpen();
   };
 
   return (
