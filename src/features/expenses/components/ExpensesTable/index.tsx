@@ -5,14 +5,15 @@ import ExpenseForm from "../ExpenseForm";
 import TableActionsColumn from "@/components/Tables/TableActionsColumn";
 import TableColumnDateFilterIcon from "@/components/Tables/TableColumnDateFilterIcon";
 import TableColumnDateFilterInput from "@/components/Tables/TableColumnDateFilterInput";
+import useAuthStore from "@/store";
 import useCurrenciesQuery from "@/hooks/queries/useCurrenciesQuery";
 import useExpensesQuery from "@/hooks/queries/useExpensesQuery";
 import useExpensesMutation from "@/hooks/mutations/useExpensesMutation";
 import useCategoriesQuery from "@/hooks/queries/useCategoriesQuery";
 import useModal from "@/hooks/useModal";
-import formatDate from "@/libs/dayjs";
 import useTableFilters from "@/hooks/useTableFilters";
 import useControlledRangePicker from "@/hooks/useControlledRangePicker";
+import formatDate from "@/libs/dayjs";
 
 const ExpensesTable = () => {
   const { filters, handleTableChange } = useTableFilters({});
@@ -20,6 +21,8 @@ const ExpensesTable = () => {
   const expensesQuery = useExpensesQuery({ reqParams: filters });
   const currenciesQuery = useCurrenciesQuery();
   const categoriesQuery = useCategoriesQuery();
+
+  const user = useAuthStore((state) => state.data?.user);
 
   const { dateFilterValue, onChange, onReset } = useControlledRangePicker();
 
@@ -85,6 +88,16 @@ const ExpensesTable = () => {
         );
         return <Tag color={"green"}>{currency?.name.toUpperCase()}</Tag>;
       },
+      filters: user?.userCurrencies?.map(({ currencyId }) => {
+        const currency = currenciesQuery?.data?.find(
+          (c) => c.id === currencyId
+        );
+
+        return {
+          text: currency?.name.toUpperCase(),
+          value: currencyId,
+        };
+      }),
     },
     {
       title: "Categoría",
