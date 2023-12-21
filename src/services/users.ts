@@ -49,10 +49,14 @@ export async function updateUserIncome({
   return Axios.patch(`/users/${user?.id}/incomes/${incomeId}`, update);
 }
 
-export async function getUserExpenses(): Promise<Expense[]> {
+export async function getUserExpenses(
+  params?: Record<string, unknown> | undefined
+): Promise<Expense[]> {
   const user = useAuthStore.getState().data?.user;
 
-  const { data } = await Axios.get(`/users/${user?.id}/expenses`);
+  const { data } = await Axios.get(`/users/${user?.id}/expenses`, {
+    params,
+  });
 
   return data.expenses;
 }

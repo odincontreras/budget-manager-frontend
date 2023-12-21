@@ -1,18 +1,27 @@
-import { Modal, Popconfirm, Space, Table, Tag, message } from "antd";
-import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
+import { Modal, Table, Tag, message } from "antd";
 import type { ColumnsType } from "antd/es/table";
-import IconButton from "@/components/IconButton";
+import { Expense } from "@/types";
+import ExpenseForm from "../ExpenseForm";
+import TableActionsColumn from "@/components/Tables/TableActionsColumn";
+import TableColumnDateFilterIcon from "@/components/Tables/TableColumnDateFilterIcon";
+import TableColumnDateFilterInput from "@/components/Tables/TableColumnDateFilterInput";
 import useCurrenciesQuery from "@/hooks/queries/useCurrenciesQuery";
 import useExpensesQuery from "@/hooks/queries/useExpensesQuery";
 import useExpensesMutation from "@/hooks/mutations/useExpensesMutation";
+import useCategoriesQuery from "@/hooks/queries/useCategoriesQuery";
 import useModal from "@/hooks/useModal";
 import formatDate from "@/libs/dayjs";
-import { Expense } from "@/types";
-import ExpenseForm from "../ExpenseForm";
+import useTableFilters from "@/hooks/useTableFilters";
+import useControlledRangePicker from "@/hooks/useControlledRangePicker";
 
 const ExpensesTable = () => {
-  const expensesQuery = useExpensesQuery();
+  const { filters, handleTableChange } = useTableFilters({});
+
+  const expensesQuery = useExpensesQuery({ reqParams: filters });
   const currenciesQuery = useCurrenciesQuery();
+  const categoriesQuery = useCategoriesQuery();
+
+  const { dateFilterValue, onChange, onReset } = useControlledRangePicker();
 
   const deleteModal = useModal();
   const updateModal = useModal();
@@ -38,12 +47,33 @@ const ExpensesTable = () => {
       title: "Cantidad",
       dataIndex: "amount",
       key: "amount",
+      sorter: true,
     },
     {
       title: "Fecha",
       dataIndex: "date",
       key: "date",
+      defaultSortOrder: "descend",
       render: (date) => formatDate(date),
+      filterIcon: () => {
+        return (
+          <TableColumnDateFilterIcon
+            filterIsActive={
+              dateFilterValue ? dateFilterValue?.length > 0 : false
+            }
+          />
+        );
+      },
+      filterDropdown: (dropdown) => {
+        return (
+          <TableColumnDateFilterInput
+            dropdownProps={dropdown}
+            dateFilterValue={dateFilterValue}
+            onChange={onChange}
+            onReset={onReset}
+          />
+        );
+      },
     },
     {
       title: "Moneda",
@@ -57,37 +87,31 @@ const ExpensesTable = () => {
       },
     },
     {
+      title: "Categoría",
+      dataIndex: "categoryId",
+      key: "categoryId",
+      render: (categoryId) => {
+        const category = categoriesQuery?.data?.find(
+          (c) => c.id === categoryId
+        );
+        return <Tag color={"green"}>{category?.name.toUpperCase()}</Tag>;
+      },
+      filters: categoriesQuery?.data?.map((category) => ({
+        text: category.name.toUpperCase(),
+        value: category.id,
+      })),
+    },
+    {
       title: "Acciones",
       dataIndex: "action",
       render: (_, record) => {
         return (
-          <Space size={"middle"}>
-            <IconButton
-              title="Editar"
-              icon={<EditOutlined />}
-              buttonProps={{ onClick: () => updateModal.onSetOpen(record.id) }}
-            />
-            <Popconfirm
-              title="Alerta"
-              description="¿Está seguro de que desea eliminar este gasto?"
-              cancelText="Cancelar"
-              okText="Eliminar"
-              open={deleteModal.open === record.id}
-              onConfirm={() => {
-                deleteMutation.mutate(record.id);
-              }}
-              onCancel={deleteModal.onToggleOpen}
-              okButtonProps={{ loading: deleteMutation.isPending }}
-            >
-              <IconButton
-                title="Eliminar"
-                icon={<DeleteOutlined />}
-                buttonProps={{
-                  onClick: () => deleteModal.onSetOpen(record.id),
-                }}
-              />
-            </Popconfirm>
-          </Space>
+          <TableActionsColumn
+            updateModal={updateModal}
+            deleteModal={deleteModal}
+            deleteMutation={deleteMutation}
+            record={record}
+          />
         );
       },
     },
@@ -95,7 +119,11 @@ const ExpensesTable = () => {
 
   return (
     <>
-      <Table columns={columns} dataSource={expensesQuery.data} />
+      <Table
+        columns={columns}
+        dataSource={expensesQuery.data}
+        onChange={handleTableChange}
+      />
 
       <Modal
         open={Boolean(updateModal.open)}

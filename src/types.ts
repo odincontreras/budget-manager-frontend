@@ -1,3 +1,5 @@
+import { SorterResult } from "antd/es/table/interface";
+
 export interface User {
   id: string;
   name: string;
@@ -36,7 +38,10 @@ export interface MutationCustomHookProps {
   extraOnSuccess?: () => void;
 }
 
-export type NewIcome = Omit<Income, "id" | "createdAt" | "updatedAt">;
+export interface QueryCustomHookProps {
+  reqParams?: Record<string, unknown>;
+  orderBy?: Record<string, unknown>;
+}
 
 export interface Expense {
   id: number;
@@ -95,4 +100,18 @@ export type ChartConfig = {
     | "treemap"
     | undefined;
   options: ApexCharts.ApexOptions;
+};
+
+export type TablesSorter =
+  | SorterResult<Expense>
+  | SorterResult<Expense>[]
+  | SorterResult<Income>
+  | SorterResult<Income>[];
+
+export type NewIcome = Omit<Income, "id" | "createdAt" | "updatedAt">;
+
+export type ModalActions = {
+  open: string | number | boolean;
+  onToggleOpen: () => void;
+  onSetOpen: (value: boolean | number | string) => void;
 };

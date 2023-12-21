@@ -1,6 +1,7 @@
 import React from "react";
+import { ModalActions } from "@/types";
 
-const useModal = () => {
+const useModal = (): ModalActions => {
   const [open, setOpen] = React.useState<boolean | number | string>(false);
 
   const onToggleOpen = () => {
