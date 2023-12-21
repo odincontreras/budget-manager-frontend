@@ -9,10 +9,14 @@ import {
 import Axios from "../libs/axios";
 import useAuthStore from "@/store";
 
-export async function getUserIncomes(): Promise<Income[]> {
+export async function getUserIncomes(
+  params?: Record<string, unknown> | undefined
+): Promise<Income[]> {
   const user = useAuthStore.getState().data?.user;
 
-  const { data } = await Axios.get(`/users/${user?.id}/incomes`);
+  const { data } = await Axios.get(`/users/${user?.id}/incomes`, {
+    params,
+  });
 
   return data.incomes;
 }

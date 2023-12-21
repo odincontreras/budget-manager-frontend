@@ -1,18 +1,26 @@
-import { Modal, Popconfirm, Space, Table, Tag, message } from "antd";
-import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
+import { Modal, Table, Tag, message } from "antd";
 import type { ColumnsType } from "antd/es/table";
-import IconButton from "@/components/IconButton";
+import { Income } from "@/types";
+import IncomeForm from "../IncomeForm";
+import TableColumnDateFilterIcon from "@/components/Tables/TableColumnDateFilterIcon";
+import TableColumnDateFilterInput from "@/components/Tables/TableColumnDateFilterInput";
+import TableActionsColumn from "@/components/Tables/TableActionsColumn";
+import useAuthStore from "@/store";
 import useIncomesQuery from "@/hooks/queries/useIncomesQuery";
 import useCurrenciesQuery from "@/hooks/queries/useCurrenciesQuery";
 import useModal from "@/hooks/useModal";
-import { Income } from "@/types";
-import formatDate from "@/libs/dayjs";
 import useIncomesMutation from "@/hooks/mutations/useIncomesMutation";
-import IncomeForm from "../IncomeForm";
+import useControlledRangePicker from "@/hooks/useControlledRangePicker";
+import useTableFilters from "@/hooks/useTableFilters";
+import formatDate from "@/libs/dayjs";
 
 const IncomesTable = () => {
-  const { data: incomes } = useIncomesQuery();
+  const { filters, handleTableChange } = useTableFilters({});
+
+  const { data: incomes } = useIncomesQuery({ reqParams: filters });
   const { data: currencies } = useCurrenciesQuery();
+
+  const user = useAuthStore((state) => state.data?.user);
 
   const deleteModal = useModal();
   const updateModal = useModal();
@@ -33,17 +41,39 @@ const IncomesTable = () => {
     },
   });
 
+  const { dateFilterValue, onChange, onReset } = useControlledRangePicker();
+
   const columns: ColumnsType<Income> = [
     {
       title: "Cantidad",
       dataIndex: "amount",
       key: "amount",
+      sorter: true,
     },
     {
       title: "Fecha",
       dataIndex: "date",
       key: "date",
       render: (date) => formatDate(date),
+      filterIcon: () => {
+        return (
+          <TableColumnDateFilterIcon
+            filterIsActive={
+              dateFilterValue ? dateFilterValue?.length > 0 : false
+            }
+          />
+        );
+      },
+      filterDropdown: (dropdown) => {
+        return (
+          <TableColumnDateFilterInput
+            dropdownProps={dropdown}
+            dateFilterValue={dateFilterValue}
+            onChange={onChange}
+            onReset={onReset}
+          />
+        );
+      },
     },
     {
       title: "Moneda",
@@ -53,47 +83,36 @@ const IncomesTable = () => {
         const currency = currencies?.find((c) => c.id === currencyId);
         return <Tag color={"green"}>{currency?.name.toUpperCase()}</Tag>;
       },
+      filters: user?.userCurrencies?.map(({ currencyId }) => {
+        const currency = currencies?.find((c) => c.id === currencyId);
+
+        return {
+          text: currency?.name.toUpperCase(),
+          value: currencyId,
+        };
+      }),
     },
     {
       title: "Acciones",
       dataIndex: "actions",
-      render: (_, record) => {
-        return (
-          <Space size={"middle"}>
-            <IconButton
-              title="Editar"
-              icon={<EditOutlined />}
-              buttonProps={{ onClick: () => updateModal.onSetOpen(record.id) }}
-            />
-            <Popconfirm
-              title="Alerta"
-              description="¿Está seguro de que desea eliminar este ingreso?"
-              cancelText="Cancelar"
-              okText="Eliminar"
-              open={deleteModal.open === record.id}
-              onConfirm={() => {
-                deleteMutation.mutate(record.id);
-              }}
-              onCancel={deleteModal.onToggleOpen}
-              okButtonProps={{ loading: deleteMutation.isPending }}
-            >
-              <IconButton
-                title="Eliminar"
-                icon={<DeleteOutlined />}
-                buttonProps={{
-                  onClick: () => deleteModal.onSetOpen(record.id),
-                }}
-              />
-            </Popconfirm>
-          </Space>
-        );
-      },
+      render: (_, record) => (
+        <TableActionsColumn
+          updateModal={updateModal}
+          deleteModal={deleteModal}
+          deleteMutation={deleteMutation}
+          record={record}
+        />
+      ),
     },
   ];
 
   return (
     <>
-      <Table columns={columns} dataSource={incomes as Income[] | undefined} />
+      <Table
+        columns={columns}
+        dataSource={incomes as Income[] | undefined}
+        onChange={handleTableChange}
+      />
       <Modal
         open={Boolean(updateModal.open)}
         onCancel={updateModal.onToggleOpen}
