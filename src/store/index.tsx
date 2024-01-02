@@ -3,10 +3,12 @@ import { devtools } from "zustand/middleware";
 import axios from "axios";
 import { ApiErrorResponse, User, UserCurrency } from "@/types";
 import { login } from "@/features/auth/services";
-import { updateUser } from "@/services/users";
+import { updateUser, verifyToken } from "@/services/users";
+import { NavigateFunction } from "react-router-dom";
 
 interface AuthStore {
   isLoading: boolean;
+  isAuthenticated: boolean;
   data: {
     user: User;
     token: string;
@@ -22,12 +24,18 @@ interface AuthStore {
     lastName: string;
     currencies: UserCurrency[];
   }) => Promise<void>;
+  verifyToken: (props: {
+    navigate: NavigateFunction;
+    pathname: string;
+    authToken?: string;
+  }) => Promise<void>;
 }
 
 const useAuthStore = create(
   devtools<AuthStore>(
     (set, get) => ({
       isLoading: false,
+      isAuthenticated: false,
       data: null,
       error: null,
       toogleLoading() {
@@ -43,7 +51,7 @@ const useAuthStore = create(
             localStorage.setItem("bugget-manager-auth-token", data.token);
           }
 
-          set({ data });
+          set({ data, isAuthenticated: true });
         } catch (error) {
           if (axios.isAxiosError(error)) {
             set({ error: error?.response?.data as ApiErrorResponse });
@@ -83,6 +91,28 @@ const useAuthStore = create(
           } else {
             set({ error: true });
           }
+        } finally {
+          get().toogleLoading();
+        }
+      },
+      async verifyToken({ navigate, pathname, authToken }) {
+        try {
+          get().toogleLoading();
+
+          const { data } = await verifyToken();
+
+          set({
+            data: { user: data, token: authToken as string },
+            isAuthenticated: true,
+          });
+
+          if (!pathname.includes("/dashboard")) {
+            navigate("/dashboard");
+          }
+        } catch (error) {
+          set({ isAuthenticated: false, data: null });
+          localStorage.removeItem("bugget-manager-auth-token");
+          navigate("/login");
         } finally {
           get().toogleLoading();
         }

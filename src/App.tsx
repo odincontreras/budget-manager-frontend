@@ -7,7 +7,7 @@ import antdTheme from "./utils/antdTheme";
 function App() {
   return (
     <ConfigProvider theme={antdTheme}>
-      <RouterProvider router={router} />
+      <RouterProvider router={router}  />
     </ConfigProvider>
   );
 }

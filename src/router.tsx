@@ -7,11 +7,16 @@ import ExpensesPage from "./features/expenses/pages/ExpensesPage.tsx";
 import IncomesPage from "./features/incomes/pages/IncomesPage.tsx";
 import ProfilePage from "./features/profile/pages/ProfilePage.tsx";
 import HomePage from "./features/home/pages/HomePage.tsx";
+import VerifyToken from "./features/auth/components/VerifyToken/index.tsx";
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <AuthLayout />,
+    element: (
+      <VerifyToken>
+        <AuthLayout />
+      </VerifyToken>
+    ),
     children: [
       { index: true, element: <Navigate to="/login" replace /> },
       {
@@ -27,7 +32,11 @@ const router = createBrowserRouter([
   },
   {
     path: "/dashboard/",
-    element: <DashboardLayout />,
+    element: (
+      <VerifyToken>
+        <DashboardLayout />
+      </VerifyToken>
+    ),
     children: [
       { index: true, element: <HomePage /> },
       {

@@ -120,3 +120,7 @@ export async function updateUser({
     currencies,
   });
 }
+
+export async function verifyToken() {
+  return Axios.get("/auth/verify-token");
+}
