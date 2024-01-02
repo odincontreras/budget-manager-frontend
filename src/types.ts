@@ -43,6 +43,11 @@ export interface QueryCustomHookProps {
   orderBy?: Record<string, unknown>;
 }
 
+export type ItemsResponse<T> = {
+  data: T[];
+  total: number;
+}
+
 export interface Expense {
   id: number;
   amount: number;

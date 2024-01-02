@@ -14,7 +14,7 @@ const MovementsGraph = () => {
 
     const expensesByDate: { [key: string]: number } = {};
 
-    dashboardExpensesQuery.data?.forEach((expense) => {
+    dashboardExpensesQuery.data?.data?.forEach((expense) => {
       const formatedDate = formatDate(expense.date);
 
       dates.push(formatedDate);
@@ -23,7 +23,7 @@ const MovementsGraph = () => {
 
     const incomesByDate: { [key: string]: number } = {};
 
-    dashboardIncomesQuery.data?.forEach((income) => {
+    dashboardIncomesQuery.data?.data?.forEach((income) => {
       const formatedDate = formatDate(income.date);
 
       dates.push(formatedDate);

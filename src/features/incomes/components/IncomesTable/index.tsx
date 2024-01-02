@@ -15,7 +15,7 @@ import useTableFilters from "@/hooks/useTableFilters";
 import formatDate from "@/libs/dayjs";
 
 const IncomesTable = () => {
-  const { filters, handleTableChange } = useTableFilters({});
+  const { filters, handleTableChange, pageSize } = useTableFilters({});
 
   const { data: incomes } = useIncomesQuery({ reqParams: filters });
   const { data: currencies } = useCurrenciesQuery();
@@ -110,8 +110,13 @@ const IncomesTable = () => {
     <>
       <Table
         columns={columns}
-        dataSource={incomes as Income[] | undefined}
+        dataSource={incomes?.data as Income[] | undefined}
         onChange={handleTableChange}
+        pagination={{
+          total: incomes?.total,
+          current: filters.skip + 1,
+          pageSize,
+        }}
       />
       <Modal
         open={Boolean(updateModal.open)}
@@ -126,7 +131,9 @@ const IncomesTable = () => {
       >
         <IncomeForm
           action="update"
-          income={incomes?.find((income) => income.id === updateModal.open)}
+          income={incomes?.data?.find(
+            (income) => income.id === updateModal.open
+          )}
           onFinish={(update) =>
             updateMutation.mutate({ incomeId: updateModal.open, update })
           }

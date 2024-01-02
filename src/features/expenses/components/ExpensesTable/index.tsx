@@ -16,7 +16,7 @@ import useControlledRangePicker from "@/hooks/useControlledRangePicker";
 import formatDate from "@/libs/dayjs";
 
 const ExpensesTable = () => {
-  const { filters, handleTableChange } = useTableFilters({});
+  const { filters, handleTableChange, pageSize } = useTableFilters({});
 
   const expensesQuery = useExpensesQuery({ reqParams: filters });
   const currenciesQuery = useCurrenciesQuery();
@@ -134,8 +134,13 @@ const ExpensesTable = () => {
     <>
       <Table
         columns={columns}
-        dataSource={expensesQuery.data}
+        dataSource={expensesQuery.data?.data}
         onChange={handleTableChange}
+        pagination={{
+          total: expensesQuery?.data?.total,
+          current: filters.skip + 1,
+          pageSize,
+        }}
       />
 
       <Modal
@@ -151,7 +156,7 @@ const ExpensesTable = () => {
       >
         <ExpenseForm
           action="update"
-          expense={expensesQuery.data?.find((e) => e.id === updateModal.open)}
+          expense={expensesQuery.data?.data?.find((e) => e.id === updateModal.open)}
           onFinish={(update) =>
             updateMutation.mutate({ expenseId: updateModal.open, update })
           }

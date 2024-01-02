@@ -1,6 +1,7 @@
 import {
   Expense,
   Income,
+  ItemsResponse,
   NewExpense,
   NewIcome,
   TotalMovements,
@@ -11,14 +12,17 @@ import useAuthStore from "@/store";
 
 export async function getUserIncomes(
   params?: Record<string, unknown> | undefined
-): Promise<Income[]> {
+): Promise<ItemsResponse<Income>> {
   const user = useAuthStore.getState().data?.user;
 
   const { data } = await Axios.get(`/users/${user?.id}/incomes`, {
     params,
   });
 
-  return data.incomes;
+  return {
+    data: data.incomes,
+    total: data._count.incomes,
+  };
 }
 
 export async function getUserTotalIncomes(): Promise<TotalMovements> {
@@ -55,14 +59,17 @@ export async function updateUserIncome({
 
 export async function getUserExpenses(
   params?: Record<string, unknown> | undefined
-): Promise<Expense[]> {
+): Promise<ItemsResponse<Expense>> {
   const user = useAuthStore.getState().data?.user;
 
   const { data } = await Axios.get(`/users/${user?.id}/expenses`, {
     params,
   });
 
-  return data.expenses;
+  return {
+    data: data.expenses,
+    total: data._count.expenses,
+  };
 }
 
 export async function getUserTotalExpenses(): Promise<TotalMovements> {

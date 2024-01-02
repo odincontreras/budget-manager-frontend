@@ -6,24 +6,29 @@ import { TablesSorter } from "@/types";
 type FiltersState = {
   filters: Record<string, unknown>;
   orderBy?: Record<string, unknown>;
+  take: number;
+  skip: number;
 };
 
 const useTableFilters = ({
-  initialFilters = { filters: {}, orderBy: undefined },
+  initialFilters = { filters: {}, orderBy: undefined, take: 6, skip: 0 },
 }) => {
   const [filters, setFilters] = React.useState<FiltersState>(initialFilters);
+  const pageSize = React.useRef(initialFilters.take);
 
   const onSetFilters = (filters: FiltersState) => {
     setFilters(filters);
   };
 
   const handleTableChange = (
-    _: TablePaginationConfig,
+    pagination: TablePaginationConfig,
     tableFilters: Record<string, FilterValue | null>,
     sorter: TablesSorter
   ) => {
     const validFilters: Record<string, unknown> = { ...filters.filters };
     let orderBy = filters?.orderBy;
+    let skip = filters?.skip;
+    let take = filters?.take;
 
     if (!Array.isArray(sorter) && sorter.order) {
       orderBy = {
@@ -33,6 +38,22 @@ const useTableFilters = ({
 
     if (!Array.isArray(sorter) && orderBy && !sorter.order) {
       orderBy = undefined;
+    }
+
+    if (pagination.current) {
+      skip = pagination.current - 1;
+
+      if (
+        pagination?.total &&
+        pagination?.pageSize &&
+        pagination.total < pagination.current * pagination.pageSize
+      ) {
+        take = pagination.total - pagination.pageSize;
+      } else {
+        take = pageSize.current;
+      }
+
+      skip = pagination.current - 1;
     }
 
     for (const [key, value] of Object.entries(tableFilters)) {
@@ -59,11 +80,17 @@ const useTableFilters = ({
       validFilters[key] = undefined;
     }
 
-    onSetFilters({ filters: validFilters, orderBy });
+    onSetFilters({
+      filters: validFilters,
+      orderBy,
+      take,
+      skip,
+    });
   };
 
   return {
     filters,
+    pageSize: pageSize.current,
     handleTableChange,
   };
 };
