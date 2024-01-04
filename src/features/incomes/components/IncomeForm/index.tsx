@@ -1,9 +1,10 @@
+import { useMemo } from "react";
 import { DatePicker, Form, Input, InputNumber, Select } from "antd";
+import dayjs from "dayjs";
 import useCurrenciesQuery from "@/hooks/queries/useCurrenciesQuery";
 import useAuthStore from "@/store";
 import { Income, NewIcome } from "@/types";
 import getUserCurrencies from "@/utils/getUserCurrencies";
-import dayjs from "dayjs";
 
 type IncomeFormProps = {
   onFinish?: (values: NewIcome) => void;
@@ -25,6 +26,11 @@ const IncomeForm = ({
 
   const userCurrencies = getUserCurrencies({ currencies: data, user: user });
 
+  const defaultCurrency = useMemo(
+    () => user?.userCurrencies.find((uc) => uc.isDefault),
+    [user?.userCurrencies]
+  );
+
   return (
     <Form
       name="modal-form"
@@ -36,7 +42,9 @@ const IncomeForm = ({
         label="Moneda"
         name="currencyId"
         rules={[{ required: true, message: "Este campo es requerido" }]}
-        initialValue={action === "update" && income?.currencyId}
+        initialValue={
+          action === "update" ? income?.currencyId : defaultCurrency?.currencyId
+        }
       >
         <Select
           style={{ width: "100%" }}
@@ -61,7 +69,7 @@ const IncomeForm = ({
         name="date"
         rules={[{ required: true, message: "Este campo es requerido" }]}
         initialValue={
-          action === "update" && income?.date && dayjs(income?.date)
+          action === "update" && income?.date ? dayjs(income?.date) : dayjs()
         }
       >
         <DatePicker format={"DD/MM/YYYY"} style={{ width: "100%" }} />
