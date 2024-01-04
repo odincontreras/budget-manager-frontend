@@ -1,13 +1,18 @@
 import ReactApexChart from "react-apexcharts";
-import { ChartConfig } from "@/types";
-import useDashboardExpensesQuery from "@/hooks/queries/useDashboardExpensesQuery";
+import { UseQueryResult } from "@tanstack/react-query";
+import { ChartConfig, Expense, ItemsResponse } from "@/types";
 import useCategoriesQuery from "@/hooks/queries/useCategoriesQuery";
 
-const PercentageOfExpensesByCategory = () => {
-  const dashboardExpensesQuery = useDashboardExpensesQuery();
+type PercentageOfExpensesByCategoryProps = {
+  dashboardExpensesQuery: UseQueryResult<ItemsResponse<Expense>, Error>;
+};
+
+const PercentageOfExpensesByCategory = ({
+  dashboardExpensesQuery,
+}: PercentageOfExpensesByCategoryProps) => {
   const categoriesQuery = useCategoriesQuery();
 
-  const expensesByCategory = dashboardExpensesQuery.data?.reduce(
+  const expensesByCategory = dashboardExpensesQuery.data?.data?.reduce(
     (acc: { [key: string]: number }, expense) => {
       const categoryId = expense.categoryId;
 
@@ -18,7 +23,7 @@ const PercentageOfExpensesByCategory = () => {
     {}
   );
 
-  const dashboardTotalExpenses = dashboardExpensesQuery.data?.reduce(
+  const dashboardTotalExpenses = dashboardExpensesQuery.data?.data?.reduce(
     (acc: number, expense) => {
       return acc + expense.amount;
     },

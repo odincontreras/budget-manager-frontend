@@ -2,9 +2,13 @@ import { Card, Flex, Progress, Typography } from "antd";
 import useTotalExpensesQuery from "@/hooks/queries/useTotalExpensesQuery";
 import useTotalIncomesQuery from "@/hooks/queries/useTotalIncomesQuery";
 
-const TotalMovements = () => {
-  const totalExpensesQuery = useTotalExpensesQuery();
-  const totalIncomesQuery = useTotalIncomesQuery();
+type TotalMovementsProps = {
+  currencyId?: number;
+};
+
+const TotalMovements = ({ currencyId }: TotalMovementsProps) => {
+  const totalExpensesQuery = useTotalExpensesQuery({currencyId});
+  const totalIncomesQuery = useTotalIncomesQuery({currencyId});
 
   const totalIncomesAmount = totalIncomesQuery.data?.amount;
   const totalExpensesAmount = totalExpensesQuery.data?.amount;

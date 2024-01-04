@@ -1,20 +1,24 @@
 import React from "react";
 import ReactApexChart from "react-apexcharts";
-import useDashboardExpensesQuery from "@/hooks/queries/useDashboardExpensesQuery";
-import useDashboardIncomesQuery from "@/hooks/queries/useDashboardIncomesQuery";
 import formatDate from "@/libs/dayjs";
-import { ChartConfig } from "@/types";
+import { ChartConfig, Expense, Income, ItemsResponse } from "@/types";
+import { UseQueryResult } from "@tanstack/react-query";
 
-const MovementsGraph = () => {
-  const dashboardExpensesQuery = useDashboardExpensesQuery();
-  const dashboardIncomesQuery = useDashboardIncomesQuery();
+type MovementsGraphProps = {
+  expensesQuery: UseQueryResult<ItemsResponse<Expense>, Error>;
+  incomesQuery: UseQueryResult<ItemsResponse<Income>, Error>;
+};
 
+const MovementsGraph = ({
+  expensesQuery,
+  incomesQuery,
+}: MovementsGraphProps) => {
   const chartData = React.useMemo(() => {
     const dates: string[] = [];
 
     const expensesByDate: { [key: string]: number } = {};
 
-    dashboardExpensesQuery.data?.data?.forEach((expense) => {
+    expensesQuery.data?.data?.forEach((expense) => {
       const formatedDate = formatDate(expense.date);
 
       dates.push(formatedDate);
@@ -23,7 +27,7 @@ const MovementsGraph = () => {
 
     const incomesByDate: { [key: string]: number } = {};
 
-    dashboardIncomesQuery.data?.data?.forEach((income) => {
+    incomesQuery.data?.data?.forEach((income) => {
       const formatedDate = formatDate(income.date);
 
       dates.push(formatedDate);
@@ -48,7 +52,7 @@ const MovementsGraph = () => {
       expensesByDate,
       incomesByDate,
     };
-  }, [dashboardExpensesQuery.data, dashboardIncomesQuery.data]);
+  }, [expensesQuery.data, incomesQuery.data]);
 
   const lineChartConfig: ChartConfig = {
     series: [
@@ -92,7 +96,7 @@ const MovementsGraph = () => {
     },
     type: "line",
   };
-  
+
   return <ReactApexChart {...lineChartConfig} />;
 };
 

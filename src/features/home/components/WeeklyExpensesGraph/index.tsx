@@ -1,14 +1,18 @@
 import ReactApexChart from "react-apexcharts";
-import useDashboardExpensesQuery from "@/hooks/queries/useDashboardExpensesQuery";
+import { UseQueryResult } from "@tanstack/react-query";
 import { getMonthNameFromDate } from "@/libs/dayjs";
 import capitalizeFirstLetter from "@/utils/capitalizeFirstLetter";
 import getMonthWeekFromDate from "@/utils/getMonthWeekFromDate";
-import { ChartConfig } from "@/types";
+import { ChartConfig, Expense, ItemsResponse } from "@/types";
 
-const WeeklyExpensesGraph = () => {
-  const dashboardExpensesQuery = useDashboardExpensesQuery();
+type WeeklyExpensesGraphProps = {
+  dashboardExpensesQuery: UseQueryResult<ItemsResponse<Expense>, Error>;
+};
 
-  const expensesByWeek = dashboardExpensesQuery.data?.reduce(
+const WeeklyExpensesGraph = ({
+  dashboardExpensesQuery,
+}: WeeklyExpensesGraphProps) => {
+  const expensesByWeek = dashboardExpensesQuery.data?.data.reduce(
     (acc: Map<string, number>, expense) => {
       const monthName = getMonthNameFromDate(expense.date);
       const weekDate = getMonthWeekFromDate(new Date(expense.date));

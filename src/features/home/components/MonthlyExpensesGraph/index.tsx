@@ -1,13 +1,17 @@
 import ReactApexChart from "react-apexcharts";
-import useDashboardExpensesQuery from "@/hooks/queries/useDashboardExpensesQuery";
+import { UseQueryResult } from "@tanstack/react-query";
 import { getMonthNameFromDate } from "@/libs/dayjs";
 import capitalizeFirstLetter from "@/utils/capitalizeFirstLetter";
-import { ChartConfig } from "@/types";
+import { ChartConfig, Expense, ItemsResponse } from "@/types";
 
-const MonthlyExpensesGraph = () => {
-  const dashboardExpensesQuery = useDashboardExpensesQuery();
+type MonthlyExpensesGraphProps = {
+  dashboardExpensesQuery: UseQueryResult<ItemsResponse<Expense>, Error>;
+};
 
-  const expensesByMonth = dashboardExpensesQuery.data?.reduce(
+const MonthlyExpensesGraph = ({
+  dashboardExpensesQuery,
+}: MonthlyExpensesGraphProps) => {
+  const expensesByMonth = dashboardExpensesQuery.data?.data?.reduce(
     (acc: Map<string, number>, expense) => {
       const expenseMonth = getMonthNameFromDate(expense.date);
 

@@ -46,6 +46,24 @@ export interface QueryCustomHookProps {
 export type ItemsResponse<T> = {
   data: T[];
   total: number;
+};
+export interface TotalExpensesAndIncomesFilters {
+  currencyId?: number;
+}
+
+export interface ExpensesAndIncomesFilters
+  extends TotalExpensesAndIncomesFilters {
+  date?: {
+    gte?: string;
+    lte?: string;
+  };
+}
+
+export interface QueryParams<ModelType, RequestFilters> {
+  take?: number;
+  skip?: number;
+  orderBy?: Partial<Record<keyof ModelType, "asc" | "desc">>;
+  filters?: RequestFilters;
 }
 
 export interface Expense {

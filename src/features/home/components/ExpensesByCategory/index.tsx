@@ -1,13 +1,18 @@
 import ReactApexChart from "react-apexcharts";
+import { UseQueryResult } from "@tanstack/react-query";
 import useCategoriesQuery from "@/hooks/queries/useCategoriesQuery";
-import useDashboardExpensesQuery from "@/hooks/queries/useDashboardExpensesQuery";
-import { ChartConfig } from "@/types";
+import { ChartConfig, Expense, ItemsResponse } from "@/types";
 
-const ExpensesByCategory = () => {
-  const dashboardExpensesQuery = useDashboardExpensesQuery();
+type ExpensesByCategoryProps = {
+  dashboardExpensesQuery: UseQueryResult<ItemsResponse<Expense>, Error>;
+};
+
+const ExpensesByCategory = ({
+  dashboardExpensesQuery,
+}: ExpensesByCategoryProps) => {
   const categoriesQuery = useCategoriesQuery();
 
-  const expensesByCategory = dashboardExpensesQuery.data?.reduce(
+  const expensesByCategory = dashboardExpensesQuery.data?.data.reduce(
     (acc: { [key: string]: number }, expense) => {
       const categoryId = expense.categoryId;
 
