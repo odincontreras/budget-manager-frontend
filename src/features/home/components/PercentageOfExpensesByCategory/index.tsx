@@ -48,20 +48,7 @@ const PercentageOfExpensesByCategory = ({
         text: "Porcentaje de gastos por categoría",
       },
       chart: {
-        height: 350,
         type: "radialBar",
-      },
-      plotOptions: {
-        radialBar: {
-          dataLabels: {
-            name: {
-              fontSize: "22px",
-            },
-            value: {
-              fontSize: "16px",
-            },
-          },
-        },
       },
       legend: {
         show: true,

@@ -49,6 +49,11 @@ const ExpensesByCategory = ({
       },
     ],
     options: {
+      chart: {
+        zoom: {
+          enabled: false,
+        },
+      },
       title: {
         text: "Gastos por categoría",
       },

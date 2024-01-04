@@ -45,6 +45,11 @@ const WeeklyExpensesGraph = ({
       },
     ],
     options: {
+      chart: {
+        zoom: {
+          enabled: false,
+        },
+      },
       title: {
         text: "Gastos por semana",
       },

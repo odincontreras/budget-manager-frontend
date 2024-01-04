@@ -1,4 +1,4 @@
-import { Card, Col, Row } from "antd";
+import { Card, Col, Row, Space } from "antd";
 import TotalMovements from "../components/TotalMovements";
 import MovementsGraph from "../components/MovementsGraph";
 import WeeklyExpensesGraph from "../components/WeeklyExpensesGraph";
@@ -20,42 +20,52 @@ const HomePage = () => {
     <>
       <DashboardFilters onUpdateFilters={onUpdateFilters} filters={filters} />
 
-      <TotalMovements currencyId={filters?.currencyId} />
+      <Space direction="vertical" size="large" style={{ width: "100%" }}>
+        <TotalMovements currencyId={filters?.currencyId} />
 
-      <Card>
-        <MovementsGraph
-          expensesQuery={expensesQuery}
-          incomesQuery={incomesQuery}
-        />
-      </Card>
-
-      <Row gutter={22}>
-        <Col span={12}>
-          <Card>
-            <MonthlyExpensesGraph dashboardExpensesQuery={expensesQuery} />
-          </Card>
-        </Col>
-        <Col span={12}>
-          <Card>
-            <WeeklyExpensesGraph dashboardExpensesQuery={expensesQuery} />
-          </Card>
-        </Col>
-      </Row>
-
-      <Row gutter={22}>
-        <Col span={12}>
-          <Card>
-            <PercentageOfExpensesByCategory
-              dashboardExpensesQuery={expensesQuery}
+        <Card>
+          <div
+            style={{
+              margin: "0 auto",
+              display: "block",
+              width: "85%",
+            }}
+          >
+            <MovementsGraph
+              expensesQuery={expensesQuery}
+              incomesQuery={incomesQuery}
             />
-          </Card>
-        </Col>
-        <Col span={12}>
-          <Card>
-            <ExpensesByCategory dashboardExpensesQuery={expensesQuery} />
-          </Card>
-        </Col>
-      </Row>
+          </div>
+        </Card>
+
+        <Row gutter={22}>
+          <Col span={12}>
+            <Card>
+              <MonthlyExpensesGraph dashboardExpensesQuery={expensesQuery} />
+            </Card>
+          </Col>
+          <Col span={12}>
+            <Card>
+              <WeeklyExpensesGraph dashboardExpensesQuery={expensesQuery} />
+            </Card>
+          </Col>
+        </Row>
+
+        <Row gutter={22}>
+          <Col span={12}>
+            <Card>
+              <PercentageOfExpensesByCategory
+                dashboardExpensesQuery={expensesQuery}
+              />
+            </Card>
+          </Col>
+          <Col span={12}>
+            <Card style={{ height: "100%" }}>
+              <ExpensesByCategory dashboardExpensesQuery={expensesQuery} />
+            </Card>
+          </Col>
+        </Row>
+      </Space>
     </>
   );
 };

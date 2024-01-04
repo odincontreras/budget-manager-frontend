@@ -72,17 +72,15 @@ const MovementsGraph = ({
     ],
     options: {
       title: {
-        text: "Missing data (null values)",
+        text: "Movimientos",
       },
 
       chart: {
-        height: 100,
         type: "area",
         zoom: {
           enabled: false,
         },
       },
-      // labels: dateLabels,
       labels: chartData.labels,
       dataLabels: {
         enabled: true,

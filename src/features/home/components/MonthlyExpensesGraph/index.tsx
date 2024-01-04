@@ -41,6 +41,11 @@ const MonthlyExpensesGraph = ({
       },
     ],
     options: {
+      chart: {
+        zoom: {
+          enabled: false,
+        },
+      },
       title: {
         text: "Gastos por mes",
       },
