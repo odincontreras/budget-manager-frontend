@@ -4,6 +4,7 @@ import {
   ItemsResponse,
   NewExpense,
   NewIcome,
+  TotalExpensesAndIncomesFilters,
   TotalMovements,
   UserCurrency,
 } from "../types";
@@ -25,10 +26,14 @@ export async function getUserIncomes(
   };
 }
 
-export async function getUserTotalIncomes(): Promise<TotalMovements> {
+export async function getUserTotalIncomes(
+  params: TotalExpensesAndIncomesFilters
+): Promise<TotalMovements> {
   const user = useAuthStore.getState().data?.user;
 
-  const { data } = await Axios.get(`/users/${user?.id}/incomes/total`);
+  const { data } = await Axios.get(`/users/${user?.id}/incomes/total`, {
+    params,
+  });
 
   return data;
 }
@@ -72,10 +77,14 @@ export async function getUserExpenses(
   };
 }
 
-export async function getUserTotalExpenses(): Promise<TotalMovements> {
+export async function getUserTotalExpenses(
+  params: TotalExpensesAndIncomesFilters
+): Promise<TotalMovements> {
   const user = useAuthStore.getState().data?.user;
 
-  const { data } = await Axios.get(`/users/${user?.id}/expenses/total`);
+  const { data } = await Axios.get(`/users/${user?.id}/expenses/total`, {
+    params,
+  });
 
   return data;
 }
