@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import { DatePicker, Form, Input, InputNumber, Select } from "antd";
 import dayjs from "dayjs";
 import useCategoriesQuery from "@/hooks/queries/useCategoriesQuery";
@@ -31,6 +32,11 @@ const ExpenseForm = ({
     user: user,
   });
 
+  const defaultCurrency = useMemo(
+    () => user?.userCurrencies.find((uc) => uc.isDefault),
+    [user?.userCurrencies]
+  );
+
   return (
     <Form
       name="modal-form"
@@ -42,7 +48,11 @@ const ExpenseForm = ({
         label="Moneda"
         name="currencyId"
         rules={[{ required: true, message: "Este campo es requerido" }]}
-        initialValue={action === "update" && expense?.currencyId}
+        initialValue={
+          action === "update"
+            ? expense?.currencyId
+            : defaultCurrency?.currencyId
+        }
       >
         <Select
           style={{ width: "100%" }}
@@ -82,7 +92,7 @@ const ExpenseForm = ({
         name="date"
         rules={[{ required: true, message: "Este campo es requerido" }]}
         initialValue={
-          action === "update" && expense?.date && dayjs(expense?.date)
+          action === "update" && expense?.date ? dayjs(expense?.date) : dayjs()
         }
       >
         <DatePicker format={"DD/MM/YYYY"} style={{ width: "100%" }} />
