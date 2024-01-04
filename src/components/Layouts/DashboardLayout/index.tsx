@@ -6,8 +6,8 @@ import {
   UserOutlined,
   PoweroffOutlined,
 } from "@ant-design/icons";
-import type { MenuProps } from "antd";
 import { Outlet, useNavigate } from "react-router-dom";
+import type { MenuProps } from "antd";
 
 const { Header, Content, Sider } = Layout;
 
@@ -28,10 +28,10 @@ function getItem(
 }
 
 const items: MenuItem[] = [
-  getItem("Home", "home", <HomeOutlined />),
-  getItem("Incomes", "incomes", <RiseOutlined />),
-  getItem("Expenses", "expenses", <FallOutlined />),
-  getItem("Profile", "profile", <UserOutlined />),
+  getItem("Inicio", "home", <HomeOutlined />),
+  getItem("Ingresos", "incomes", <RiseOutlined />),
+  getItem("Gastos", "expenses", <FallOutlined />),
+  getItem("Perfil", "profile", <UserOutlined />),
 ];
 
 const DashboardLayout = () => {
