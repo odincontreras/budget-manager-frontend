@@ -1,24 +1,21 @@
 import React from "react";
 import type { TablePaginationConfig } from "antd/es/table";
 import { FilterValue } from "antd/es/table/interface";
-import { TablesSorter } from "@/types";
-
-type FiltersState = {
-  filters: Record<string, unknown>;
-  orderBy?: Record<string, unknown>;
-  take: number;
-  skip: number;
-};
+import {
+  ExpensesAndIncomesFilters,
+  Income,
+  QueryParams,
+  TablesSorter,
+} from "@/types";
 
 const useTableFilters = ({
-  initialFilters = { filters: {}, orderBy: undefined, take: 6, skip: 0 },
+  initialFilters = { filters: {}, orderBy: undefined, take: 5, skip: 0 },
 }) => {
-  const [filters, setFilters] = React.useState<FiltersState>(initialFilters);
+  const [filters, setFilters] =
+    React.useState<QueryParams<Income, ExpensesAndIncomesFilters>>(
+      initialFilters
+    );
   const pageSize = React.useRef(initialFilters.take);
-
-  const onSetFilters = (filters: FiltersState) => {
-    setFilters(filters);
-  };
 
   const handleTableChange = (
     pagination: TablePaginationConfig,
@@ -27,7 +24,7 @@ const useTableFilters = ({
   ) => {
     const validFilters: Record<string, unknown> = { ...filters.filters };
     let orderBy = filters?.orderBy;
-    let skip = filters?.skip;
+    let skip = filters?.skip || 0;
     let take = filters?.take;
 
     if (!Array.isArray(sorter) && sorter.order) {
@@ -40,7 +37,7 @@ const useTableFilters = ({
       orderBy = undefined;
     }
 
-    if (pagination.current) {
+    if (pagination.current && pagination.current -1 !== skip) {
       skip = pagination.current - 1;
 
       if (
@@ -80,7 +77,7 @@ const useTableFilters = ({
       validFilters[key] = undefined;
     }
 
-    onSetFilters({
+    setFilters({
       filters: validFilters,
       orderBy,
       take,

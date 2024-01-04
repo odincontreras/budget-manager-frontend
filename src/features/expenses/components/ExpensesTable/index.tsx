@@ -18,7 +18,7 @@ import formatDate from "@/libs/dayjs";
 const ExpensesTable = () => {
   const { filters, handleTableChange, pageSize } = useTableFilters({});
 
-  const expensesQuery = useExpensesQuery({ reqParams: filters });
+  const expensesQuery = useExpensesQuery(filters);
   const currenciesQuery = useCurrenciesQuery();
   const categoriesQuery = useCategoriesQuery();
 
@@ -138,7 +138,7 @@ const ExpensesTable = () => {
         onChange={handleTableChange}
         pagination={{
           total: expensesQuery?.data?.total,
-          current: filters.skip + 1,
+          current: filters?.skip ? filters.skip + 1 : 1,
           pageSize,
         }}
       />
@@ -156,7 +156,9 @@ const ExpensesTable = () => {
       >
         <ExpenseForm
           action="update"
-          expense={expensesQuery.data?.data?.find((e) => e.id === updateModal.open)}
+          expense={expensesQuery.data?.data?.find(
+            (e) => e.id === updateModal.open
+          )}
           onFinish={(update) =>
             updateMutation.mutate({ expenseId: updateModal.open, update })
           }

@@ -17,7 +17,7 @@ import formatDate from "@/libs/dayjs";
 const IncomesTable = () => {
   const { filters, handleTableChange, pageSize } = useTableFilters({});
 
-  const { data: incomes } = useIncomesQuery({ reqParams: filters });
+  const { data: incomes } = useIncomesQuery(filters);
   const { data: currencies } = useCurrenciesQuery();
 
   const user = useAuthStore((state) => state.data?.user);
@@ -114,7 +114,7 @@ const IncomesTable = () => {
         onChange={handleTableChange}
         pagination={{
           total: incomes?.total,
-          current: filters.skip + 1,
+          current: filters?.skip ? filters.skip + 1 : 1,
           pageSize,
         }}
       />
