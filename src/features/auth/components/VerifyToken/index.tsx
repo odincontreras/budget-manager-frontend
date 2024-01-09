@@ -7,7 +7,7 @@ type VerifyTokenProps = {
   children: React.ReactNode;
 };
 
-const VerifyToken = ({ children }: VerifyTokenProps) => {
+const VerifyToken = ({ children }: VerifyTokenProps): React.ReactNode => {
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
   const verifyToken = useAuthStore((state) => state.verifyToken);
   const authToken = localStorage.getItem("bugget-manager-auth-token");
